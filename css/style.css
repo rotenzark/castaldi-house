@@ -1,0 +1,923 @@
+/* ============================================================
+   CASTALDI HOUSE — Guest house, Milano Porta Venezia
+   Palette: intonaco, verde persiana, ottone delle targhette
+   ============================================================ */
+
+:root {
+  --intonaco:   #F6EFE3;   /* fondo principale */
+  --crema:      #EFE6D3;   /* sezioni alternate */
+  --carta:      #FCF8F0;   /* card */
+  --inchiostro: #2B2B26;   /* testo */
+  --grigio:     #6E685C;   /* testo secondario */
+  --persiana:   #43604F;   /* verde persiane */
+  --persiana-scura: #33493C;
+  --ottone:     #8F6B2E;   /* CTA (AA con testo chiaro) */
+  --ottone-chiaro: #C8A45B;/* targhette e decori */
+  --notte:      #241F19;   /* intro e footer */
+
+  --f-display: "Prata", "Georgia", serif;
+  --f-body: "Albert Sans", "Segoe UI", Arial, sans-serif;
+
+  --maxw: 1120px;
+  --pad: clamp(20px, 5vw, 64px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  font-family: var(--f-body);
+  font-size: 17px;
+  line-height: 1.65;
+  background: var(--intonaco);
+  color: var(--inchiostro);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--ottone-chiaro); color: var(--notte); }
+
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--persiana-scura);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.section-verde :focus-visible,
+.footer :focus-visible,
+.intro :focus-visible { outline-color: var(--intonaco); }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  top: -60px; left: 16px;
+  z-index: 400;
+  background: var(--notte);
+  color: var(--intonaco);
+  padding: 10px 18px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 12px; }
+
+/* ============ INTRO "IL CHECK-IN" ============ */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  perspective: 1400px;
+  background: var(--notte);
+}
+
+body.intro-lock { overflow: hidden; }
+
+.porta {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: calc(50% + 1px);
+  background:
+    linear-gradient(rgba(36, 31, 25, 0.18), rgba(36, 31, 25, 0.18)),
+    var(--persiana-scura);
+  border-top: 10px solid var(--notte);
+  border-bottom: 10px solid var(--notte);
+  box-shadow: inset 0 0 0 2px rgba(246, 239, 227, 0.08);
+  transition: transform 0.95s cubic-bezier(0.6, 0, 0.25, 1);
+}
+.porta::before,
+.porta::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  border: 2px solid rgba(246, 239, 227, 0.14);
+  border-radius: 4px;
+}
+.porta::before { top: 8%; height: 38%; }
+.porta::after  { bottom: 8%; height: 34%; }
+
+.porta-sx { left: 0; transform-origin: left center; }
+.porta-dx { right: 0; transform-origin: right center; }
+
+.pomello {
+  position: absolute;
+  top: 50%;
+  right: 7%;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--ottone-chiaro);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.pomello-sx { right: auto; left: 7%; }
+
+.intro--apre .porta-sx { transform: rotateY(-84deg); }
+.intro--apre .porta-dx { transform: rotateY(84deg); }
+
+.serratura {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.intro--apre .serratura { opacity: 0; }
+
+.chiave {
+  width: min(46vw, 230px);
+  height: auto;
+  opacity: 0;
+  transform: translateX(-46px);
+  animation:
+    chiave-entra 0.7s cubic-bezier(0.3, 0.9, 0.3, 1) 0.25s forwards,
+    chiave-gira 0.55s cubic-bezier(0.5, 0, 0.4, 1) 1.15s forwards;
+}
+@keyframes chiave-entra {
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes chiave-gira {
+  from { transform: rotate(0); }
+  to   { transform: rotate(38deg); }
+}
+
+.k-anello { stroke: var(--ottone-chiaro); stroke-width: 6; }
+.k-foro   { fill: var(--notte); stroke: var(--ottone-chiaro); stroke-width: 2; }
+.k-fusto, .k-dente { fill: var(--ottone-chiaro); }
+
+.serratura-nome {
+  font-family: var(--f-display);
+  font-size: clamp(30px, 6vw, 52px);
+  color: var(--intonaco);
+  opacity: 0;
+  animation: nome-in 0.6s ease 1.45s forwards;
+}
+.serratura-riga {
+  font-size: clamp(11px, 1.6vw, 13.5px);
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(246, 239, 227, 0.65);
+  opacity: 0;
+  animation: nome-in 0.6s ease 1.65s forwards;
+}
+@keyframes nome-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ingresso hero orchestrato con la fine dell'intro */
+.has-intro .hero-inner {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.intro-done .hero-inner {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.7s ease 0.3s, transform 0.7s ease 0.3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro { display: none; }
+  .has-intro .hero-inner { opacity: 1; transform: none; }
+}
+
+/* ============ TOPBAR ============ */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 14px var(--pad);
+  background: rgba(246, 239, 227, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(43, 43, 38, 0.14);
+}
+
+.wordmark {
+  font-family: var(--f-display);
+  font-size: 21px;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--inchiostro);
+  white-space: nowrap;
+}
+.wordmark em { font-style: normal; color: var(--persiana); }
+
+.nav { margin-right: auto; }
+.nav-toggle { display: none; }
+
+.nav-menu {
+  display: flex;
+  gap: 26px;
+  list-style: none;
+}
+.nav-menu a {
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  color: var(--grigio);
+  transition: color 0.15s;
+}
+.nav-menu a:hover { color: var(--inchiostro); }
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lang-switch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  background: none;
+  border: none;
+  color: var(--grigio);
+  font: inherit;
+  cursor: pointer;
+  padding: 6px 8px;
+}
+.lang-btn.is-active { color: var(--ottone); }
+.lang-btn:hover { color: var(--inchiostro); }
+.lang-sep { color: rgba(43, 43, 38, 0.25); }
+
+/* ============ BOTTONI ============ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 15px 28px;
+  font-family: var(--f-body);
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s, background-color 0.15s, border-color 0.15s;
+}
+.btn:active { transform: scale(0.98); }
+
+.btn-ottone {
+  background: var(--ottone);
+  color: #FFF8EC;
+}
+.btn-ottone:hover { background: #7A5A25; }
+
+.btn-quieto {
+  border: 1.5px solid rgba(43, 43, 38, 0.35);
+  color: var(--inchiostro);
+  background: none;
+}
+.btn-quieto:hover { border-color: var(--inchiostro); }
+
+.btn-small { padding: 9px 18px; font-size: 14px; }
+
+/* ============ HERO + PRENOTAZIONE ============ */
+
+.hero {
+  position: relative;
+  padding: clamp(48px, 7vw, 90px) var(--pad) clamp(64px, 9vw, 110px);
+  overflow: hidden;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: clamp(36px, 5vw, 72px);
+  align-items: center;
+}
+
+.eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--persiana);
+  margin-bottom: 22px;
+}
+
+.hero-title {
+  font-family: var(--f-display);
+  font-size: clamp(52px, 8.5vw, 104px);
+  font-weight: 400;
+  line-height: 1.0;
+  letter-spacing: -0.01em;
+}
+.hero-title em { font-style: normal; color: var(--persiana); }
+
+.hero-lead {
+  max-width: 520px;
+  font-size: clamp(16.5px, 1.9vw, 19px);
+  color: var(--grigio);
+  margin: 24px 0 22px;
+}
+
+.hero-punti {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.hero-punti li {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--persiana-scura);
+  background: rgba(67, 96, 79, 0.1);
+  border: 1px solid rgba(67, 96, 79, 0.22);
+  border-radius: 999px;
+  padding: 7px 15px;
+}
+
+.hero-proof {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grigio);
+}
+
+/* card prenotazione */
+
+.prenota {
+  background: var(--carta);
+  border: 1px solid rgba(43, 43, 38, 0.14);
+  border-top: 5px solid var(--ottone-chiaro);
+  border-radius: 10px;
+  padding: 26px 24px 24px;
+  box-shadow: 0 18px 44px rgba(43, 43, 38, 0.14);
+}
+
+.prenota-titolo {
+  font-family: var(--f-display);
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+.prenota-sub {
+  font-size: 13.5px;
+  color: var(--grigio);
+  margin-bottom: 18px;
+}
+
+.prenota-campi {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.campo { display: grid; gap: 5px; }
+.campo span {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--persiana-scura);
+}
+.campo input,
+.campo select {
+  font: 500 15px var(--f-body);
+  color: var(--inchiostro);
+  background: #FFFFFF;
+  border: 1.5px solid rgba(43, 43, 38, 0.22);
+  border-radius: 6px;
+  padding: 11px 10px;
+  min-height: 46px;
+  width: 100%;
+}
+.campo input:focus,
+.campo select:focus {
+  outline: 2px solid var(--persiana);
+  outline-offset: 1px;
+}
+
+.prenota-notti {
+  min-height: 22px;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--persiana-scura);
+}
+
+.prenota-errore {
+  margin-top: 4px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #8A3324;
+}
+
+.prenota-cta {
+  width: 100%;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.prenota-alt {
+  display: block;
+  margin-top: 12px;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--grigio);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prenota-alt:hover { color: var(--inchiostro); }
+
+/* fascia persiane sotto l'hero */
+
+.persiane {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 26px;
+  background: repeating-linear-gradient(
+    180deg,
+    var(--persiana) 0 4px,
+    var(--persiana-scura) 4px 6px
+  );
+  opacity: 0.9;
+}
+
+/* ============ SEZIONI ============ */
+
+.section { padding: clamp(68px, 9vw, 120px) var(--pad); }
+
+.section > * {
+  max-width: var(--maxw);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-crema { background: var(--crema); }
+
+.section-verde {
+  background: var(--persiana-scura);
+  color: var(--intonaco);
+}
+
+.section-head { margin-bottom: clamp(32px, 4.5vw, 56px); }
+
+.section-head h2 {
+  font-family: var(--f-display);
+  font-size: clamp(30px, 4.4vw, 48px);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.section-sub {
+  margin-top: 10px;
+  max-width: 560px;
+  font-size: 16px;
+  color: var(--grigio);
+}
+.section-sub-chiara { color: rgba(246, 239, 227, 0.75); }
+
+/* ============ VANTAGGI ============ */
+
+.vantaggi-wrap { padding-top: clamp(48px, 6vw, 72px); padding-bottom: clamp(48px, 6vw, 72px); }
+
+.vantaggi {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.vantaggio {
+  background: var(--carta);
+  border: 1px solid rgba(43, 43, 38, 0.12);
+  border-radius: 10px;
+  padding: 26px 24px;
+}
+
+.v-num {
+  display: inline-block;
+  font-family: var(--f-display);
+  font-size: 34px;
+  color: var(--ottone);
+  margin-bottom: 10px;
+}
+
+.vantaggio h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.vantaggio p {
+  font-size: 14.5px;
+  color: var(--grigio);
+}
+
+/* ============ CAMERE ============ */
+
+.camere {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.camera {
+  background: var(--carta);
+  border: 1px solid rgba(43, 43, 38, 0.14);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.camera-foto {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(67, 96, 79, 0.9) 0 10px,
+      rgba(51, 73, 60, 0.9) 10px 14px
+    );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.targa {
+  font-family: var(--f-display);
+  font-size: 44px;
+  color: var(--notte);
+  background: linear-gradient(160deg, #D9BC7C, var(--ottone-chiaro) 55%, #A9832F);
+  border: 2px solid rgba(36, 31, 25, 0.35);
+  border-radius: 10px;
+  width: 92px;
+  height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+.camera-corpo {
+  padding: 22px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.camera-corpo h3 {
+  font-family: var(--f-display);
+  font-size: 23px;
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.camera-corpo > p {
+  font-size: 14.5px;
+  color: var(--grigio);
+  margin-bottom: 14px;
+}
+
+.camera-doti {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.camera-doti li {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--persiana-scura);
+  background: rgba(67, 96, 79, 0.1);
+  border-radius: 999px;
+  padding: 5px 12px;
+}
+
+.camera-scegli {
+  margin-top: auto;
+  align-self: flex-start;
+  background: none;
+  border: none;
+  font: 700 14.5px var(--f-body);
+  color: var(--ottone);
+  cursor: pointer;
+  padding: 4px 0;
+  border-bottom: 1.5px solid rgba(143, 107, 46, 0.4);
+  transition: border-color 0.15s;
+}
+.camera-scegli:hover { border-color: var(--ottone); }
+
+.camere-nota {
+  margin-top: 22px;
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--grigio);
+}
+
+/* ============ LA CASA ============ */
+
+.casa-grid,
+.dove-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: clamp(32px, 5vw, 70px);
+  align-items: start;
+}
+
+.casa-titolo {
+  font-family: var(--f-display);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 400;
+  line-height: 1.15;
+  margin-bottom: 0.6em;
+}
+
+.casa-grid p {
+  color: var(--grigio);
+  max-width: 560px;
+}
+.casa-grid p + p { margin-top: 1.1em; }
+
+.casa-doti {
+  list-style: none;
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(43, 43, 38, 0.18);
+}
+.casa-doti li {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 16px 4px;
+  border-bottom: 1px solid rgba(43, 43, 38, 0.18);
+}
+.casa-doti em {
+  font-family: var(--f-display);
+  font-style: normal;
+  font-size: 24px;
+  color: var(--ottone);
+  min-width: 58px;
+}
+.casa-doti span { font-size: 15px; font-weight: 500; }
+
+/* ============ QUARTIERE ============ */
+
+.quartiere {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.tappa {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  background: rgba(246, 239, 227, 0.06);
+  border: 1px solid rgba(246, 239, 227, 0.16);
+  border-radius: 10px;
+  padding: 20px 22px;
+}
+
+.tappa em {
+  font-family: var(--f-display);
+  font-style: normal;
+  font-size: 26px;
+  color: var(--ottone-chiaro);
+  min-width: 44px;
+  line-height: 1.2;
+}
+
+.tappa h3 {
+  font-size: 16.5px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.tappa p {
+  font-size: 14.5px;
+  color: rgba(246, 239, 227, 0.75);
+}
+
+/* ============ DOVE ============ */
+
+.dove-indirizzo {
+  font-family: var(--f-display);
+  font-style: normal;
+  font-size: clamp(22px, 2.8vw, 28px);
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+
+.dove-metro {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--grigio);
+  margin-bottom: 24px;
+}
+.metro-dot {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: #D9241D; /* rosso della M1 */
+  flex: none;
+}
+
+.dove-azioni {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.dove-contatti {
+  font-size: 15px;
+  color: var(--grigio);
+}
+.dove-contatti a {
+  color: var(--inchiostro);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(43, 43, 38, 0.3);
+}
+.dove-contatti a:hover { border-color: var(--ottone); }
+
+.dove-persiane {
+  align-self: stretch;
+  min-height: 220px;
+  border-radius: 10px;
+  background: repeating-linear-gradient(
+    180deg,
+    var(--persiana) 0 12px,
+    var(--persiana-scura) 12px 17px
+  );
+  border: 1px solid rgba(43, 43, 38, 0.2);
+}
+
+/* ============ FOOTER ============ */
+
+.footer {
+  background: var(--notte);
+  color: var(--intonaco);
+  padding: clamp(56px, 8vw, 96px) var(--pad) 40px;
+}
+
+.footer > * {
+  max-width: var(--maxw);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer-wordmark {
+  font-family: var(--f-display);
+  font-size: clamp(44px, 8vw, 96px);
+  line-height: 1;
+  color: rgba(246, 239, 227, 0.14);
+  margin-bottom: clamp(38px, 5vw, 64px);
+  user-select: none;
+}
+.footer-wordmark em { font-style: normal; }
+
+.footer-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-bottom: 52px;
+}
+
+.footer-cols h3 {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ottone-chiaro);
+  margin-bottom: 14px;
+}
+
+.footer-cols p {
+  font-size: 15.5px;
+  color: rgba(246, 239, 227, 0.8);
+}
+.footer-cols a {
+  color: var(--intonaco);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(246, 239, 227, 0.3);
+  transition: border-color 0.15s;
+}
+.footer-cols a:hover { border-color: var(--ottone-chiaro); }
+
+.footer-legal {
+  font-size: 12.5px;
+  color: rgba(246, 239, 227, 0.72);
+  border-top: 1px solid rgba(246, 239, 227, 0.14);
+  padding-top: 22px;
+}
+
+/* ============ REVEAL ============ */
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ============ RESPONSIVE ============ */
+
+@media (max-width: 980px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .vantaggi { grid-template-columns: 1fr; }
+  .camere { grid-template-columns: 1fr; }
+  .casa-grid,
+  .dove-grid { grid-template-columns: 1fr; }
+  .quartiere { grid-template-columns: 1fr; }
+  .dove-persiane { min-height: 90px; }
+}
+
+@media (max-width: 860px) {
+  html { scroll-padding-top: 130px; }
+
+  .topbar { gap: 16px; flex-wrap: wrap; }
+
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 1.5px solid rgba(43, 43, 38, 0.3);
+    border-radius: 6px;
+    color: var(--inchiostro);
+    font: 600 13.5px var(--f-body);
+    letter-spacing: 0.03em;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  .nav-toggle-bar {
+    width: 14px;
+    height: 2px;
+    background: currentColor;
+    box-shadow: 0 -4px 0 currentColor, 0 4px 0 currentColor;
+  }
+
+  .nav { order: 3; width: 100%; margin: 0; }
+  .nav-menu {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    padding: 6px 0 10px;
+  }
+  .nav.is-open .nav-menu { display: flex; }
+  .nav-menu a {
+    display: block;
+    padding: 12px 2px;
+    font-size: 16px;
+    border-bottom: 1px solid rgba(43, 43, 38, 0.1);
+  }
+
+  .topbar-actions { margin-left: auto; }
+
+  .prenota-campi { grid-template-columns: 1fr; }
+
+  .dove-azioni .btn { width: 100%; }
+}
